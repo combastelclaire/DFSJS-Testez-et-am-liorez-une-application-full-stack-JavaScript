@@ -28,32 +28,25 @@ function SessionForm() {
     }
   }, [user, navigate]);
 
-  useEffect(() => {
-    fetchTeachers();
-    if (isEditMode) {
-      fetchSession();
-    }
-  }, [id]);
-
-  const fetchTeachers = async (): Promise<any> => {
+  const fetchTeachers = async (signal?: AbortSignal) => {
     try {
       const response = await api.get<Teacher[]>('/teacher', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
+        signal
       });
       setTeachers(response.data);
     } catch (err: any) {
-      console.error('Failed to fetch teachers', err);
+      if (err.name !== 'CanceledError') {
+        console.error('Failed to fetch teachers', err);
+      }
     }
   };
 
-  const fetchSession = async (): Promise<any> => {
+  const fetchSession = async (signal?: AbortSignal) => {
     try {
       const response = await api.get<Session>(`/session/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
+        signal,
       });
       const session = response.data;
       setFormData({
@@ -63,10 +56,21 @@ function SessionForm() {
         teacherId: session.teacher.id,
       });
     } catch (err: any) {
-      setError('Failed to load session');
-      console.error(err);
+      if (err.name !== 'CanceledError') {
+        setError('Failed to load session');
+        console.error(err);
+      }
     }
   };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchTeachers(controller.signal); 
+    if (isEditMode) {
+      fetchSession(controller.signal);
+    }
+    return () => controller.abort();
+  }, [id]);
 
   const handleChange = (e: any): any => {
     const value =

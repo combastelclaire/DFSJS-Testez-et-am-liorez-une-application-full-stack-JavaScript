@@ -14,28 +14,31 @@ function Profile() {
   const token = authService.getToken();
   const isDev = (import.meta as any).env?.DEV === true;
 
-  useEffect(() => {
-    if (user) {
-      fetchUserInfo();
-    }
-  }, []);
-
-  const fetchUserInfo = async (): Promise<any> => {
+  const fetchUserInfo = async (signal?: AbortSignal) => {
     try {
       setLoading(true);
       const response = await api.get(`/user/${user.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
+        signal,
       });
       setUserInfo(response.data);
     } catch (err: any) {
-      setError('Failed to load user information');
-      console.error(err);
+      if (err.name !== 'CanceledError') {
+        setError('Failed to load user information');
+        console.error(err);
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    if (user) {
+      fetchUserInfo(controller.signal); 
+    }
+    return () => controller.abort();
+  }, []);
 
   const handleDeleteAccount = async (): Promise<any> => {
     if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {

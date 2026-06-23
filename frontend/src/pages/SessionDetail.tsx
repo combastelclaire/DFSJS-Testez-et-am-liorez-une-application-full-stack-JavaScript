@@ -13,26 +13,29 @@ function SessionDetail() {
   const user = authService.getCurrentUser();
   const token = authService.getToken();
 
-  useEffect(() => {
-    fetchSession();
-  }, [id]);
-
-  const fetchSession = async (): Promise<any> => {
+  const fetchSession = async (signal?: AbortSignal) => {
     try {
       setLoading(true);
       const response = await api.get<Session>(`/session/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` }, 
+        signal,
       });
       setSession(response.data);
     } catch (err: any) {
-      setError('Failed to load session details');
-      console.error(err);
+      if (err.name !== 'CanceledError') {
+        setError('Failed to load session details');
+        console.error(err);
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchSession(controller.signal); 
+    return () => controller.abort();
+  }, [id]);
 
   const handleParticipate = async (): Promise<any> => {
     try {

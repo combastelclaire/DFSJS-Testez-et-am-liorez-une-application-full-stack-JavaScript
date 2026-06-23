@@ -11,26 +11,29 @@ function Sessions() {
   const user = authService.getCurrentUser();
   const token = authService.getToken();
 
-  useEffect(() => {
-    fetchSessions();
-  }, []);
-
-  const fetchSessions = async (): Promise<any> => {
+  const fetchSessions = async (signal?: AbortSignal) => {
     try {
       setLoading(true);
       const response = await api.get<Session[]>('/session', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
+        signal,
       });
       setSessions(response.data);
     } catch (err: any) {
-      setError('Failed to load sessions');
-      console.error(err);
+      if (err.name !== 'CanceledError') {
+        setError('Failed to load sessions');
+        console.error(err);
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchSessions(controller.signal);
+    return () => controller.abort();
+  }, []);
 
   const handleDelete = async (sessionId: any): Promise<any> => {
     if (!window.confirm('Are you sure you want to delete this session?')) {
