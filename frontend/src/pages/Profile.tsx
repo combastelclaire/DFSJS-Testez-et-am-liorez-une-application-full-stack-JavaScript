@@ -2,30 +2,35 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { authService } from '../services/auth.service';
+import { User } from '../types';
+import axios from 'axios';
 
 function Profile() {
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useState<any>(null);
-  const [loading, setLoading] = useState<any>(true);
-  const [error, setError] = useState<any>('');
-  const [promoteLoading, setPromoteLoading] = useState<any>(false);
-  const [promoteError, setPromoteError] = useState<any>('');
+  const [userInfo, setUserInfo] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
+  const [promoteLoading, setPromoteLoading] = useState<boolean>(false);
+  const [promoteError, setPromoteError] = useState<string>('');
   const user = authService.getCurrentUser();
   const token = authService.getToken();
-  const isDev = (import.meta as any).env?.DEV === true;
+  const isDev = import.meta.env.DEV;
 
-  const fetchUserInfo = async (signal?: AbortSignal) => {
+  const fetchUserInfo = async (signal?: AbortSignal): Promise<void> => {
     try {
       setLoading(true);
-      const response = await api.get(`/user/${user.id}`, {
+      const response = await api.get(`/user/${user!.id}`, {
         headers: { Authorization: `Bearer ${token}` },
         signal,
       });
       setUserInfo(response.data);
-    } catch (err: any) {
-      if (err.name !== 'CanceledError') {
-        setError('Failed to load user information');
+    } catch (err: unknown) {
+      if (axios.isCancel(err)) return;
+      if (axios.isAxiosError<{ message?: string }>(err)) {
+        setError(err.response?.data?.message ?? 'Failed to load user information');
+      } else {
         console.error(err);
+        setError('Failed to load user information');
       }
     } finally {
       setLoading(false);
@@ -40,26 +45,26 @@ function Profile() {
     return () => controller.abort();
   }, []);
 
-  const handleDeleteAccount = async (): Promise<any> => {
+  const handleDeleteAccount = async (): Promise<void> => {
     if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
       return;
     }
 
     try {
-      await api.delete(`/user/${user.id}`, {
+      await api.delete(`/user/${user!.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       authService.logout();
       navigate('/login');
-    } catch (err: any) {
+    } catch (err: unknown) {
       alert('Failed to delete account');
       console.error(err);
     }
   };
 
-  const handlePromoteAdmin = async (): Promise<any> => {
+  const handlePromoteAdmin = async (): Promise<void> => {
     try {
       setPromoteError('');
       setPromoteLoading(true);
@@ -74,7 +79,7 @@ function Profile() {
       );
       setUserInfo(response.data);
       authService.updateCurrentUser({ admin: response.data.admin });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setPromoteError('Failed to promote to admin');
       console.error(err);
     } finally {
@@ -164,11 +169,14 @@ function Profile() {
                 Member Since
               </label>
               <p className="text-lg text-gray-800">
-                {new Date(userInfo.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                {userInfo.createdAt
+                  ? new Date(userInfo.createdAt).toLocaleDateString('fr-FR', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })
+                  : ''
+                }
               </p>
             </div>
           </div>
