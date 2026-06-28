@@ -148,7 +148,7 @@ function Profile() {
                   </span>
                 )}
               </p>
-              {isDev && !userInfo.admin ? (
+              {isDev && !userInfo.admin && (
                 <div className="mt-3">
                   <button
                     onClick={handlePromoteAdmin}
@@ -157,11 +157,11 @@ function Profile() {
                   >
                     {promoteLoading ? 'Promoting...' : 'Promote to Admin (Dev)'}
                   </button>
-                  {promoteError ? (
+                  {promoteError && (
                     <div className="mt-2 text-sm text-red-600">{promoteError}</div>
-                  ) : null}
+                  )}
                 </div>
-              ) : null}
+              )}
             </div>
 
             <div className="border-b pb-4">

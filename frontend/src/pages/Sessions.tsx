@@ -77,14 +77,14 @@ function Sessions() {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Yoga Sessions</h1>
-          {user && user.admin ? (
+          {user && user.admin && (
             <Link
               to="/sessions/create"
               className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700"
             >
               Create Session
             </Link>
-          ) : null}
+          )}
         </div>
 
         {sessions.length === 0 ? (
@@ -119,14 +119,14 @@ function Sessions() {
                     View Details
                   </Link>
 
-                  {user && user.admin ? (
+                  {user && user.admin && (
                     <button
                       onClick={() => handleDelete(session.id)}
                       className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
                     >
                       Delete
                     </button>
-                  ) : null}
+                  )}
                 </div>
               </div>
             ))}

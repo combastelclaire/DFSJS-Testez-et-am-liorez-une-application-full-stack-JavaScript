@@ -25,11 +25,11 @@ function Navbar() {
                 <Link to="/sessions" className="hover:text-indigo-200">
                   Sessions
                 </Link>
-                {user && user.admin ? (
+                {user && user.admin && (
                   <Link to="/sessions/create" className="hover:text-indigo-200">
                     Create Session
                   </Link>
-                ) : null}
+                )}
                 <Link to="/profile" className="hover:text-indigo-200">
                   Profile
                 </Link>
