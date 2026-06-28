@@ -41,7 +41,7 @@ function SessionDetail() {
   const handleParticipate = async (): Promise<void> => {
     try {
       await api.post(
-        `/session/${id}/participate/${user.id}`,
+        `/session/${id}/participate/${user!.id}`,
         {},
         {
           headers: {
@@ -58,7 +58,7 @@ function SessionDetail() {
 
   const handleUnparticipate = async (): Promise<void> => {
     try {
-      await api.delete(`/session/${id}/participate/${user.id}`, {
+      await api.delete(`/session/${id}/participate/${user!.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -106,7 +106,7 @@ function SessionDetail() {
     );
   }
 
-  const isParticipating = session.users.includes(user.id);
+  const isParticipating = session.users.includes(user!.id);
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
@@ -148,7 +148,7 @@ function SessionDetail() {
           </div>
 
           <div className="flex space-x-4">
-            {user.admin ? (
+            {user!.admin ? (
               <>
                 <button
                   onClick={() => navigate(`/sessions/edit/${id}`)}
