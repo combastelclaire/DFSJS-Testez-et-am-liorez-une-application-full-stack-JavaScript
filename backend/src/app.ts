@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import routes from './routes';
+import { errorHandlingMiddleware } from './middleware/error.middleware';
 
 dotenv.config();
 
@@ -17,9 +18,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(routes);
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.status(200).json({ status: 'ok', message: 'Yoga Studio API is running' });
 });
+
+app.use(errorHandlingMiddleware);
 
 // Start server
 app.listen(PORT, () => {
