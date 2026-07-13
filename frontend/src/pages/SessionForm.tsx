@@ -129,10 +129,11 @@ function SessionForm() {
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="session-name" className="block text-gray-700 text-sm font-bold mb-2">
                 Session Name
               </label>
               <input
+                id="session-name"
                 type="text"
                 name="name"
                 value={formData.name}
@@ -143,10 +144,11 @@ function SessionForm() {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="session-date" className="block text-gray-700 text-sm font-bold mb-2">
                 Date
               </label>
               <input
+                id="session-date"
                 type="date"
                 name="date"
                 value={formData.date}
@@ -157,10 +159,11 @@ function SessionForm() {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="session-teacherId" className="block text-gray-700 text-sm font-bold mb-2">
                 Teacher
               </label>
               <select
+                id="session-teacherId"
                 name="teacherId"
                 value={formData.teacherId}
                 onChange={handleChange}
@@ -177,10 +180,11 @@ function SessionForm() {
             </div>
 
             <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="session-description" className="block text-gray-700 text-sm font-bold mb-2">
                 Description
               </label>
               <textarea
+                id="session-description"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
