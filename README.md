@@ -279,12 +279,19 @@ p4-dfsjs-starter/
 
 ## Testing
 
-The project supports comprehensive testing with the following frameworks:
-- **Unit tests**: For testing individual components and utilities
-- **Integration tests**: For testing API endpoints
-- **End-to-end tests**: For testing critical user flows
+### Frontend (Vitest + React Testing Library)
 
-Run tests with the appropriate npm scripts in each directory.
+The frontend is tested with [Vitest](https://vitest.dev/) and [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/): unit tests for services and components in isolation, and integration tests for the full pages.
+
+```bash
+cd frontend
+npm run test           # run the test suite once
+npm run test:watch     # re-run tests on file changes
+npm run test:coverage  # run tests and generate a coverage report
+```
+
+The coverage command enforces a minimum of 80% for statements, branches, functions, and lines. After running it, open `frontend/coverage/index.html` in a browser for a detailed, file-by-file HTML report.
+
 
 ## Troubleshooting
 
